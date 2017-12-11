@@ -1,4 +1,4 @@
-module One where
+module Advent.One where
 
 matchPair :: Int -> [Int] -> Int -> Int
 matchPair _ [] count = count

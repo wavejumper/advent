@@ -1,4 +1,4 @@
-module Two where
+module Advent.Two where
 
 import Data.List.Split
 import Lib (stringToIntList)
@@ -7,15 +7,16 @@ type Row = [Int]
 type Spreadsheet = [Row]
 
 rowDifference :: Row -> Int
-rowDifference row = (max row) - (min row)
+rowDifference row = (maximum row) - (minimum row)
 
 calculateChecksum :: Spreadsheet -> Int
-calculateChecksum spreadsheet = foldr (+) (map rowDifference spreadsheet)
+calculateChecksum spreadsheet = sum (map rowDifference spreadsheet)
 
 makeSpreadsheet :: String -> Spreadsheet
 makeSpreadsheet s = map stringToIntList $ splitOn "\n" s
 
 main :: IO ()
 main = do putStrLn "Spreadsheet pls"
-          spreadsheet <- readLn
-          putstrLn $ calculateChecksum (makeSpreadsheet spreadsheet)
+          str <- readLn
+          let checksum = calculateChecksum (makeSpreadsheet str)
+              in putStrLn $ show checksum

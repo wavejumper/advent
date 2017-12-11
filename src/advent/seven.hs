@@ -26,7 +26,7 @@ readChar (char:rest) state Dependencies name weight dependencies graph
   | char == '\n' = readChar rest "" Name "" 0 [] (graph ++ [(node name weight dependencies)])
   | otherwise = readChar rest (state ++ [char]) Dependencies name weight dependencies graph
 
-readChar ('(':'-':'>':rest) state Weight name _ dependencies graph
+readChar (')':'-':'>':rest) state Weight name _ dependencies graph
   = case read state of
       Just weight -> readChar rest "" Dependencies name weight dependencies graph
       Nothing -> Nothing
