@@ -21,7 +21,6 @@ readCaptcha (input:xs) parsed =
 advent1 :: IO ()
 advent1 = do putStrLn "What is the captcha?!"
              captcha <- readLn
-             putStrLn captcha
              case readCaptcha captcha [] of
                Just x -> putStrLn $ show (calculateCaptcha x)
                Nothing -> putStrLn "Failed to read captcha"
