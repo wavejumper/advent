@@ -15,8 +15,8 @@ calculateChecksum spreadsheet = sum (map rowDifference spreadsheet)
 makeSpreadsheet :: String -> Spreadsheet
 makeSpreadsheet s = map stringToIntList $ splitOn "\n" s
 
-main :: IO ()
-main = do putStrLn "Spreadsheet pls"
-          str <- readLn
-          let checksum = calculateChecksum (makeSpreadsheet str)
-              in putStrLn $ show checksum
+advent2 :: IO ()
+advent2 = do putStrLn "Spreadsheet pls"
+             str <- readLn
+             let checksum = calculateChecksum (makeSpreadsheet str)
+                 in putStrLn $ show checksum

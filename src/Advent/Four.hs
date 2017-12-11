@@ -18,8 +18,8 @@ validPassphrase passphrase =
 validPassphrases :: [String] -> Int
 validPassphrases passphrases = length $ filter validPassphrase passphrases
 
-main :: IO ()
-main = do putStrLn "What are your passphrases?"
-          str <- readLn
-          let passphrases = splitOn "\n" str
-              in putStrLn $ show (validPassphrases passphrases)
+advent4 :: IO ()
+advent4 = do putStrLn "What are your passphrases?"
+             str <- readLn
+             let passphrases = splitOn "\n" str
+                 in putStrLn $ show (validPassphrases passphrases)

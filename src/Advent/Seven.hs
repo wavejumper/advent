@@ -41,3 +41,6 @@ readChar (char:rest) state Name _ _ _ graph
 
 stringToGraph :: String -> Maybe Graph
 stringToGraph s = readChar s "" Name [] 0 [] []
+
+advent7 :: IO ()
+advent7 = putStrLn "WIP"

@@ -16,8 +16,8 @@ jump world pos count =
 calculateSteps :: Seq Int -> Int
 calculateSteps world = jump world 0 0
 
-main :: IO ()
-main = do putStrLn "What is your world?"
-          str <- readLn
-          let world = fromList $ stringToIntList str
-              in putStrLn $ show (calculateSteps world)
+advent5 :: IO ()
+advent5 = do putStrLn "What is your world?"
+             str <- readLn
+             let world = fromList $ stringToIntList str
+                 in putStrLn $ show (calculateSteps world)

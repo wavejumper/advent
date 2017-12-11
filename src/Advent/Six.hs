@@ -28,8 +28,8 @@ calculateCycles prevBanks nextBanks cycles
                     banks = distributeBank nextBanks selectedBank
                 in calculateCycles nextBanks banks (cycles + 1)
 
-main :: IO ()
-main = do putStrLn "Input banks"
-          str <- readLn
-          let banks = fromList $ stringToIntList str
-              in putStrLn $ show (calculateCycles Sequence.empty banks 0)
+advent6 :: IO ()
+advent6 = do putStrLn "Input banks"
+             str <- readLn
+             let banks = fromList $ stringToIntList str
+                 in putStrLn $ show (calculateCycles Sequence.empty banks 0)
