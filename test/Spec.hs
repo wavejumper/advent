@@ -1,8 +1,10 @@
 module Main where
 
 import Test.Hspec
-import Lib (calculateCaptcha)
 
+import Advent.One (calculateCaptcha)
+
+advent1 :: Spec
 advent1 = do
   it "example one" $ do
     calculateCaptcha [1122] `shouldBe` (3 :: Int)
