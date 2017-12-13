@@ -1,46 +1,123 @@
 module Advent.Seven where
 
+import Text.Read (readMaybe)
+import Data.List (find, sort)
+import Data.Maybe (mapMaybe)
+-- import Data.Ord
+
 data Node = Node { nodeName :: String
                  , nodeWeight :: Int
                  , nodeDependencies :: [String]
                  }
+                 deriving (Ord, Eq, Show)
+-- {
+--instance Ord Node where
+--  (Node { nodeWeight = w1 } ) `compare` (Node { nodeWeight = w2 })
+--    | w1 <= w2 = LS
+--    | otherwise = RS
+--
 
 type Graph = [Node]
 
-data NodeAst =  Name | Weight | Dependencies
+data NodeAst = NodeAst { parsedState :: String
+                       , parsedGraph :: Graph
+                       , parsedNode  :: Node
+                       }
 
-node :: String -> Int -> [String] -> Node
-node name weight dependencies
-  = Node { nodeName = name
-         , nodeWeight = weight
-         , nodeDependencies = dependencies
-         }
+data NodeAstState = Name NodeAst String
+                  | Weight NodeAst String
+                  | Dependencies NodeAst String
 
-readChar :: String -> String -> NodeAst -> String -> Int -> [String] -> Graph -> Maybe Graph
-readChar [] _ Dependencies _ _ _ graph = Just graph
-readChar [] _ _ _ _ _ _ = Nothing
+updateState' :: Char -> NodeAst -> NodeAst
+updateState' c n@(NodeAst {parsedState = state}) = n { parsedState = state ++ [c] }
 
-readChar (char:rest) state Dependencies name weight dependencies graph
-  | char == ',' = readChar rest "" Dependencies name weight (dependencies ++ [state]) graph
-  | char == ' ' = readChar rest state Dependencies name weight dependencies graph
-  | char == '\n' = readChar rest "" Name "" 0 [] (graph ++ [(node name weight dependencies)])
-  | otherwise = readChar rest (state ++ [char]) Dependencies name weight dependencies graph
+clearState' :: NodeAst -> NodeAst
+clearState' n = n { parsedState = "" }
 
-readChar (')':'-':'>':rest) state Weight name _ dependencies graph
-  = case read state of
-      Just weight -> readChar rest "" Dependencies name weight dependencies graph
-      Nothing -> Nothing
+newNode :: Node
+newNode = Node "" 0 []
 
-readChar (char:rest) state Weight name _ _ graph
-  = readChar rest (state ++ [char]) Weight name 0 [] graph
+commitNode' :: NodeAst -> NodeAst
+commitNode' n@(NodeAst {parsedGraph = graph, parsedNode = currNode}) =
+  clearState' n{ parsedGraph = graph ++ [currNode], parsedNode = newNode }
 
-readChar (char:rest) state Name _ _ _ graph
-  | char == '(' = readChar rest "" Weight state 0 [] graph
-  | char == ' ' = readChar rest state Name "" 0 [] graph
-  | otherwise = readChar rest (state ++ [char]) Name "" 0 [] graph
+setWeight' :: NodeAst -> Node -> Node
+setWeight' NodeAst { parsedState = state } n =
+  case readMaybe state :: Maybe Int of
+    Just w -> n { nodeWeight = w }
+    Nothing -> n
+
+setName' :: NodeAst -> Node -> Node
+setName' NodeAst { parsedState = state } n = n { nodeName = state }
+
+conjDependency' :: NodeAst -> Node -> Node
+conjDependency' NodeAst { parsedState = state } n@(Node { nodeDependencies = dependencies }) =
+  n { nodeDependencies = dependencies ++ [state] }
+
+updateNode' :: NodeAst -> (NodeAst -> Node -> Node) -> NodeAst
+updateNode' ast@(NodeAst { parsedNode = n }) f = clearState' ast { parsedNode = f ast n }
+
+readChar :: NodeAstState -> Maybe Graph
+
+readChar (Dependencies ast@(NodeAst { parsedGraph = graph, parsedNode = node, parsedState = state }) [])
+  | node == newNode = Just graph
+  | state == "" = Just $ graph ++ [node]
+  | otherwise = Just $ graph ++ [conjDependency' ast node]
+
+readChar (Weight (NodeAst { parsedGraph = graph, parsedNode = node }) []) = Just $ graph ++ [node]
+readChar (Name _ []) = Nothing
+
+readChar (Dependencies ast (char:rest))
+  | char == ',' = readChar $ Dependencies (updateNode' ast conjDependency') rest
+  | char == ' ' = readChar $ Dependencies ast rest
+  | char == '\n' = readChar $ Name (commitNode' ast) rest
+  | otherwise = readChar $ Dependencies (updateState' char ast) rest
+
+readChar (Weight ast (')':' ':'-':'>':rest))
+  = readChar $ Dependencies (updateNode' ast setWeight') rest
+
+readChar (Weight ast (')':'-':'>':rest))
+  = readChar $ Dependencies (updateNode' ast setWeight') rest
+
+readChar (Weight ast (char:rest))
+  = readChar $ Weight (updateState' char ast) rest
+
+readChar (Name ast (char:rest))
+  | char == '(' = readChar $ Weight (updateNode' ast setName') rest
+  | char == ' ' = readChar $ Name ast rest
+  | otherwise = readChar $ Name (updateState' char ast) rest
 
 stringToGraph :: String -> Maybe Graph
-stringToGraph s = readChar s "" Name [] 0 [] []
+stringToGraph s = readChar $ Name (NodeAst "" [] newNode) s
+
+data Tree = Tree Node [Tree] | Bottom
+  deriving (Ord, Eq, Show)
+
+addToTop :: Node -> Tree -> Node -> Tree
+
+addToTop top Bottom bottom = Tree top [(Tree bottom [])]
+addToTop top tree@(Tree currTop deps) bottom
+  | bottom == currTop = Tree top [tree]
+  | top == currTop = Tree top $ sort (deps ++ [(Tree bottom [])])
+  | otherwise = Tree currTop $ sort (map (\d -> addToTop top d bottom) deps)
+
+getDependency :: Graph -> String -> Maybe Node
+getDependency graph str =
+  find findNode graph
+  where findNode (Node {nodeName = name }) = name == str
+
+graphToTree :: Graph -> Tree
+graphToTree graph =
+  foldl findBottom Bottom graph
+  where findBottom tree node@(Node { nodeDependencies = deps } )
+          | deps == [] = tree
+          | otherwise = foldl (addToTop node) tree $ mapMaybe (getDependency graph) deps
+
+calculateTop :: Graph -> Maybe Node
+calculateTop graph =
+  case graphToTree graph of
+    (Tree top _) -> Just top
+    Bottom -> Nothing
 
 advent7 :: IO ()
 advent7 = putStrLn "WIP"

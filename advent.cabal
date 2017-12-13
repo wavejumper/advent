@@ -25,6 +25,8 @@ library
                      , split
                      , containers
                      , hspec 
+                     , fclabels
+                     , hashmap
   default-language:    Haskell2010
 
 executable advent-exe

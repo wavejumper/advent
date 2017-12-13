@@ -7,6 +7,7 @@ import Advent.Two (calculateChecksum)
 import Advent.Four (validPassphrases)
 import Advent.Five (calculateSteps)
 import Advent.Six (calculateCycles)
+import Advent.Seven (stringToGraph Graph)
 
 advent1 :: Spec
 advent1 = do
@@ -24,7 +25,8 @@ advent2 = do
   it "example" $ do
     let spreadsheet = [ [5, 1, 9, 5]
                       , [7, 5, 3]
-                      , [2, 4, 6, 8] ]
+                      , [2, 4, 6, 8]
+                      ]
         in calculateChecksum spreadsheet `shouldBe` (18 :: Int)
 
 advent4 :: Spec
@@ -32,7 +34,8 @@ advent4 = do
   it "example" $ do
     let passphrases = [ "aa bb cc dd ee"
                       , "aa bb cc dd aa"
-                      , "aa bb cc dd aaa" ]
+                      , "aa bb cc dd aaa"
+                      ]
         in validPassphrases passphrases `shouldBe` (2 :: Int)
 
 advent5 :: Spec
@@ -46,6 +49,33 @@ advent6 = do
   it "example" $ do
     let banks = Sequence.fromList [0, 2, 7, 0]
         in calculateCycles Sequence.empty banks 0 `shouldBe` (5 :: Int)
+
+advent7 :: Spec
+advent7 = do
+  it "example" $ do
+    let str = unlines [ "pbga (66)"
+                      , "xhth (57)"
+                      , "ebii (61)"
+                      , "havc (66)"
+                      , "ktlj (57)"
+                      , "fwft (72) -> ktlj, cntj, xhth"
+                      , "qoyq (66)"
+                      , "padx (45) -> pbga, havc, qoyq"
+                      , "tknk (41) -> ugml, padx, fwft"
+                      , "jptl (61)"
+                      , "ugml (68) -> gyxo, ebii, jptl"
+                      , "gyxo (61)"
+                      , "cntj (57)"
+                      ]
+        graph = stringToGraph str
+        in stringToGraph graph `shouldBe` ([ (Node "pbga" 66 [])
+                                           , (Node "xhth" 57 [])
+                                           , (Node "ebii" 61 [])
+                                           , (Node "havc" 66 [])
+                                           , (Node "ktlj" 57 [])
+                                           , (Node "fwft" 57 ["ktlj", "cntj", "xhth"])
+                                           , (Node "quyq" 66 [])
+                                           ] :: Graph)
 
 spec :: Spec
 spec = do
