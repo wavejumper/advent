@@ -10,6 +10,10 @@ data Node = Node { nodeName :: String
                  , nodeDependencies :: [String]
                  }
                  deriving (Ord, Eq, Show)
+
+data Tree = Tree Node [Tree] | Empty
+  deriving (Ord, Eq, Show)
+
 -- {
 --instance Ord Node where
 --  (Node { nodeWeight = w1 } ) `compare` (Node { nodeWeight = w2 })
@@ -90,12 +94,9 @@ readChar (Name ast (char:rest))
 stringToGraph :: String -> Maybe Graph
 stringToGraph s = readChar $ Name (NodeAst "" [] newNode) s
 
-data Tree = Tree Node [Tree] | Bottom
-  deriving (Ord, Eq, Show)
-
 addToTop :: Node -> Tree -> Node -> Tree
 
-addToTop top Bottom bottom = Tree top [(Tree bottom [])]
+addToTop top Empty bottom = Tree top [(Tree bottom [])]
 addToTop top tree@(Tree currTop deps) bottom
   | bottom == currTop = Tree top [tree]
   | top == currTop = Tree top $ sort (deps ++ [(Tree bottom [])])
@@ -108,7 +109,7 @@ getDependency graph str =
 
 graphToTree :: Graph -> Tree
 graphToTree graph =
-  foldl findBottom Bottom graph
+  foldl findBottom Empty graph
   where findBottom tree node@(Node { nodeDependencies = deps } )
           | deps == [] = tree
           | otherwise = foldl (addToTop node) tree $ mapMaybe (getDependency graph) deps
@@ -117,7 +118,7 @@ calculateTop :: Graph -> Maybe Node
 calculateTop graph =
   case graphToTree graph of
     (Tree top _) -> Just top
-    Bottom -> Nothing
+    Empty -> Nothing
 
 advent7 :: IO ()
 advent7 = putStrLn "WIP"
