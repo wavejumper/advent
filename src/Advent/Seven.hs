@@ -95,7 +95,6 @@ stringToGraph :: String -> Maybe Graph
 stringToGraph s = readChar $ Name (NodeAst "" [] newNode) s
 
 addToTop :: Node -> Tree -> Node -> Tree
-
 addToTop top Empty bottom = Tree top [(Tree bottom [])]
 addToTop top tree@(Tree currTop deps) bottom
   | bottom == currTop = Tree top [tree]
