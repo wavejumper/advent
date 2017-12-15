@@ -8,6 +8,8 @@ import Advent.Four (validPassphrases)
 import Advent.Five (calculateSteps)
 import Advent.Six (calculateCycles)
 import Advent.Seven hiding (advent7)
+import Advent.Eight hiding (advent8)
+import Data.HashMap as HashMap hiding (map)
 
 advent1 :: Spec
 advent1 = do
@@ -91,6 +93,20 @@ advent7 =
                 Nothing -> Nothing
                 Just g -> calculateTop g
 
+advent8 :: Spec
+advent8 =
+  let str = unlines [ "b inc 5 if a > 1"
+                    , "a inc 1 if b < 5"
+                    , "c dec -10 if a >= 1"
+                    , "c inc -20 if c == 10"
+                    ]
+      computed = case readInstructions str of
+                   Just i -> executeInstructions i
+                   Nothing -> HashMap.empty
+  in do
+    it "largest value" $ do
+      (largestValue computed) `shouldBe` (Just ("a", 1))
+
 spec :: Spec
 spec = do
   describe "Advent of Code: Day 1" advent1
@@ -99,6 +115,7 @@ spec = do
   describe "Advent of Code: Day 5" advent5
   describe "Advent of Code: Day 6" advent6
   describe "Advent of Code: Day 7" advent7
+  describe "Advent of Code: Day 8" advent8
 
 main :: IO ()
 main = hspec spec

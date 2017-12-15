@@ -3,9 +3,8 @@ module Advent.Eight where
 import Data.HashMap as HashMap hiding (map)
 import Text.Read (readMaybe)
 import Data.List.Split
-import Lib (mapIndexed)
 
-data Fn = Inc | Dec
+data Fn = Inc | Dec deriving (Show)
 
 data Op = If
         | Equals
@@ -14,11 +13,13 @@ data Op = If
         | GreaterThanEquals
         | LessThanEquals
         | NotEquals
+        deriving (Show)
 
 data Statement = Symbol String
                | Function Fn
                | Value Int
                | Operator Op
+               deriving (Show)
 
 type Register = Map String Int
 
@@ -98,8 +99,8 @@ emptyRegister i =
 executeInstructions :: Instructions -> Register
 executeInstructions i = foldl executeInstruction (emptyRegister i) i
 
-largetValue :: Register -> Maybe (String, Int)
-largetValue r =
+largestValue :: Register -> Maybe (String, Int)
+largestValue r =
   HashMap.foldWithKey registerMax Nothing r
   where registerMax k v (Just (pk, pv))
           | v > pv = Just (k, v)
