@@ -17,6 +17,7 @@ selectDay "5" = advent5
 selectDay "6" = advent6
 selectDay "7" = advent7
 selectDay "8" = advent8
+selectDay "9" = advent9
 selectDay  _  = putStrLn "Invalid day"
 
 main :: IO ()

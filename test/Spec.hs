@@ -2,6 +2,8 @@ module Main where
 
 import Test.Hspec
 import Data.Sequence as Sequence
+import Data.HashMap as HashMap hiding (map)
+
 import Advent.One (calculateCaptcha)
 import Advent.Two (calculateChecksum)
 import Advent.Four (validPassphrases)
@@ -9,7 +11,7 @@ import Advent.Five (calculateSteps)
 import Advent.Six (calculateCycles)
 import Advent.Seven hiding (advent7)
 import Advent.Eight hiding (advent8)
-import Data.HashMap as HashMap hiding (map)
+import Advent.Nine (readStream)
 
 advent1 :: Spec
 advent1 = do
@@ -107,6 +109,25 @@ advent8 =
     it "largest value" $ do
       (largestValue computed) `shouldBe` (Just ("a", 1))
 
+advent9 :: Spec
+advent9 = do
+  it "example one" $ do
+    readStream "{}" `shouldBe` 1
+  it "example two" $ do
+    readStream "{{{}}}" `shouldBe` 6
+  it "example three" $ do
+    readStream "{{},{}}" `shouldBe` 5
+  it "example four" $ do
+    readStream "{{{},{},{{}}}}" `shouldBe` 16
+  it "example five" $ do
+    readStream "{<a>,<a>,<a>,<a>}" `shouldBe` 1
+  it "example six" $ do
+    readStream "{{<ab>},{<ab>},{<ab>},{<ab>}}" `shouldBe` 9
+  it "example seven" $ do
+    readStream "{{<!!>},{<!!>},{<!!>},{<!!>}}" `shouldBe` 9
+  it "example eight" $ do
+    readStream "{{<a!>},{<a!>},{<a!>},{<ab>}}" `shouldBe` 3
+
 spec :: Spec
 spec = do
   describe "Advent of Code: Day 1" advent1
@@ -116,6 +137,7 @@ spec = do
   describe "Advent of Code: Day 6" advent6
   describe "Advent of Code: Day 7" advent7
   describe "Advent of Code: Day 8" advent8
+  describe "Advent of Code: Day 9" advent9
 
 main :: IO ()
 main = hspec spec
