@@ -9,6 +9,7 @@ import Advent.Seven
 import Advent.Eight
 import Advent.Nine
 import Advent.Ten
+import Advent.Twelve
 
 selectDay :: String -> IO ()
 selectDay "1" = advent1
